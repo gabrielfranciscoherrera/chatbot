@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Documentación API - Chatbot Webkor</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0f1115;
+      color: #e5e7eb;
+      line-height: 1.6;
+      padding: 40px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 { color: #fff; border-bottom: 2px solid #10a37f; padding-bottom: 12px; margin-bottom: 24px; }
+    h2 { color: #10a37f; margin-top: 36px; font-size: 20px; }
+    h3 { color: #4dabf7; margin-top: 24px; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th, td { border: 1px solid #2a2b32; padding: 10px 12px; text-align: left; }
+    th { background: #1c1e24; color: #fff; }
+    td code { background: #1c1e24; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    pre {
+      background: #16181d;
+      border: 1px solid #2a2b32;
+      border-radius: 10px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #10a37f;
+      color: #0f1115;
+    }
+    .print-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10a37f;
+      color: #0f1115;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    @media print {
+      body { background: #fff; color: #111; }
+      h1 { color: #111; border-color: #10a37f; }
+      h2 { color: #0d8c6d; }
+      h3 { color: #1864ab; }
+      th { background: #f3f4f6; color: #111; }
+      td, th { border-color: #d1d5db; }
+      pre { background: #f3f4f6; border-color: #d1d5db; color: #111; }
+      td code { background: #f3f4f6; color: #111; }
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Guardar como PDF</button>
+
+  <h1>Documentación API — Chatbot Webkor</h1>
+
+  <h2>1. Información General</h2>
+  <table>
+    <tr><th>Campo</th><th>Valor</th></tr>
+    <tr><td>Base URL</td><td><code>https://chatbot.webkor.org/api/chat/</code></td></tr>
+    <tr><td>Formato</td><td>JSON</td></tr>
+    <tr><td>Codificación</td><td>UTF-8</td></tr>
+    <tr><td>Método principal</td><td><code>POST</code></td></tr>
+    <tr><td>Autenticación</td><td><code>user_id</code> (generado por cliente o sesión PHP)</td></tr>
+  </table>
+
+  <h2>2. Endpoint</h2>
+  <h3>POST /api/chat/</h3>
+  <p>Recibe un mensaje del usuario, lo persiste en la base de datos MySQL y retorna una respuesta generada por el asistente.</p>
+
+  <h2>3. Request Body</h2>
+  <pre><code>{
+  "message": "Hola",
+  "conversation_id": "conv_123",
+  "user_id": "user_001"
+}</code></pre>
+  <table>
+    <tr><th>Campo</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
+    <tr><td><code>message</code></td><td>string</td><td>Sí</td><td>Mensaje enviado por el usuario</td></tr>
+    <tr><td><code>conversation_id</code></td><td>string</td><td>Sí</td><td>Identificador único de la conversación</td></tr>
+    <tr><td><code>user_id</code></td><td>string</td><td>Sí</td><td>Identificador único del usuario</td></tr>
+  </table>
+
+  <h2>4. Response Exitosa (200 OK)</h2>
+  <pre><code>{
+  "status": "success",
+  "data": {
+    "id": "msg_001",
+    "type": "text",
+    "content": "¡Hola! ¿En qué puedo ayudarte?",
+    "role": "assistant",
+    "conversation_id": "conv_123",
+    "suggestions": ["Ayuda", "Código"]
+  },
+  "error": null
+}</code></pre>
+  <table>
+    <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+    <tr><td><code>status</code></td><td>string</td><td>Estado de la petición: <code>success</code></td></tr>
+    <tr><td><code>data.id</code></td><td>string</td><td>ID único del mensaje de respuesta</td></tr>
+    <tr><td><code>data.type</code></td><td>string</td><td>Tipo de contenido: <code>text</code>, <code>code</code>, <code>image</code>, <code>markdown</code></td></tr>
+    <tr><td><code>data.content</code></td><td>string</td><td>Cuerpo de la respuesta</td></tr>
+    <tr><td><code>data.role</code></td><td>string</td><td>Rol del emisor: <code>assistant</code></td></tr>
+    <tr><td><code>data.conversation_id</code></td><td>string</td><td>ID de la conversación asociada</td></tr>
+    <tr><td><code>data.suggestions</code></td><td>array&lt;string&gt;</td><td>Sugerencias de follow-up</td></tr>
+  </table>
+
+  <h2>5. Caso Fallback (200 OK)</h2>
+  <pre><code>{
+  "status": "success",
+  "data": {
+    "content": "No entendí tu pregunta",
+    "intent": "unknown",
+    "confidence": 0.1,
+    "fallback": true
+  },
+  "error": null
+}</code></pre>
+  <table>
+    <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+    <tr><td><code>fallback</code></td><td>boolean</td><td><code>true</code> indica respuesta genérica</td></tr>
+    <tr><td><code>intent</code></td><td>string</td><td>Intención detectada (ej. <code>unknown</code>)</td></tr>
+    <tr><td><code>confidence</code></td><td>float</td><td>Nivel de confianza entre <code>0.0</code> y <code>1.0</code></td></tr>
+  </table>
+
+  <h2>6. Caso Error</h2>
+  <h3>400 Bad Request</h3>
+  <pre><code>{
+  "status": "error",
+  "data": null,
+  "error": {
+    "code": 400,
+    "message": "El campo message es obligatorio."
+  }
+}</code></pre>
+  <h3>500 Internal Server Error</h3>
+  <pre><code>{
+  "status": "error",
+  "data": null,
+  "error": {
+    "code": 500,
+    "message": "Error interno del servidor"
+  }
+}</code></pre>
+  <table>
+    <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+    <tr><td><code>status</code></td><td>string</td><td>Estado de la petición: <code>error</code></td></tr>
+    <tr><td><code>error.code</code></td><td>integer</td><td>Código HTTP de error</td></tr>
+    <tr><td><code>error.message</code></td><td>string</td><td>Descripción legible del error</td></tr>
+  </table>
+
+  <h2>7. Flujo de Uso Recomendado</h2>
+  <ol>
+    <li><strong>Inicio de sesión / visita:</strong> generar un <code>user_id</code> único (frontend o PHP session).</li>
+    <li><strong>Nueva conversación:</strong> generar un <code>conversation_id</code> único y enviar el primer mensaje.</li>
+    <li><strong>Mensajes subsiguientes:</strong> reutilizar el mismo <code>conversation_id</code> para mantener contexto.</li>
+    <li><strong>Renderizado:</strong> usar <code>data.type</code> para decidir si renderizar texto plano, Markdown, código o imagen.</li>
+    <li><strong>Fallback:</strong> si <code>fallback === true</code>, mostrar una advertencia visual de "respuesta genérica".</li>
+  </ol>
+
+  <h2>8. CORS</h2>
+  <p>El endpoint acepta peticiones <code>OPTIONS</code> para preflight y responde con los headers necesarios si se envía un <code>Origin</code> válido.</p>
+
+  <h2>9. Stack Tecnológico</h2>
+  <table>
+    <tr><th>Capa</th><th>Tecnología</th></tr>
+    <tr><td>Lenguaje</td><td>PHP 8+ (<code>strict_types=1</code>)</td></tr>
+    <tr><td>Base de datos</td><td>MySQL 8.0 (PDO)</td></tr>
+    <tr><td>Frontend</td><td>HTML5, CSS3, JavaScript Vanilla</td></tr>
+    <tr><td>Servidor</td><td>Apache / Nginx</td></tr>
+  </table>
+</body>
+</html>

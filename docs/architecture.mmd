@@ -1,0 +1,31 @@
+flowchart TB
+    subgraph Cliente[" Navegador (Cliente) "]
+        FE["Frontend\nHTML + CSS + JS"]
+        LS["localStorage\n(conversaciones locales)"]
+    end
+
+    subgraph Servidor[" Servidor Web (Apache/Nginx) "]
+        API["API Endpoint\nPOST /api/chat/\nPHP 8+"]
+        CFG["config.php\n(PDO MySQL)"]
+    end
+
+    subgraph BD[" Base de Datos (MySQL 8.0) "]
+        DB[("chatbot")]
+        T1["users"]
+        T2["conversations"]
+        T3["messages"]
+    end
+
+    FE -->|"1. Mensaje del usuario\nJSON: {message, conversation_id, user_id}"| API
+    API -->|"2. Validar y guardar"| CFG
+    CFG -->|"3. INSERT/SELECT"| DB
+    DB --> T1
+    DB --> T2
+    DB --> T3
+    CFG -->|"4. Generar respuesta"| API
+    API -->|"5. JSON Response\n{text/code/image/markdown}"| FE
+    FE <-->|"persistencia local"| LS
+
+    style Cliente fill:#202123,stroke:#4d4d4f,color:#fff
+    style Servidor fill:#1c7ed6,stroke:#1864ab,color:#fff
+    style BD fill:#10a37f,stroke:#0d8c6d,color:#fff

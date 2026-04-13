@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diagrama de Arquitectura - Chatbot Webkor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0f1115;
+      color: #e5e7eb;
+      padding: 40px 20px;
+      line-height: 1.5;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1 { text-align: center; font-size: 28px; margin-bottom: 8px; color: #fff; }
+    .subtitle { text-align: center; color: #9ca3af; margin-bottom: 48px; }
+
+    .diagram {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .layer {
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+    }
+    .layer-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      opacity: 0.9;
+    }
+
+    .client { background: linear-gradient(135deg, #202123 0%, #2a2b32 100%); border: 1px solid #3e3f4b; }
+    .server { background: linear-gradient(135deg, #1c4a6e 0%, #1c7ed6 100%); border: 1px solid #4dabf7; }
+    .database { background: linear-gradient(135deg, #0d4d3d 0%, #10a37f 100%); border: 1px solid #40c057; }
+
+    .boxes {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .box {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 16px 20px;
+      min-width: 160px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .box strong { display: block; font-size: 15px; margin-bottom: 4px; color: #fff; }
+    .box small { display: block; color: rgba(255,255,255,0.8); font-size: 12px; }
+
+    .arrow-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+    }
+    .arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #9ca3af;
+      font-size: 12px;
+      gap: 4px;
+    }
+    .arrow svg { width: 24px; height: 24px; }
+    .arrow-label {
+      background: rgba(255,255,255,0.08);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .db-tables {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .table-badge {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .legend {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid #2a2b32;
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-client { background: #3e3f4b; }
+    .dot-server { background: #4dabf7; }
+    .dot-db { background: #40c057; }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .client { background: #f3f4f6; border-color: #d1d5db; }
+      .server { background: #dbeafe; border-color: #93c5fd; }
+      .database { background: #d1fae5; border-color: #86efac; }
+      .box { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); color: #111; }
+      .box strong { color: #111; }
+      .box small { color: #374151; }
+      .layer-title { color: #374151; }
+      .arrow { color: #374151; }
+      .arrow-label { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); }
+      .table-badge { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); color: #111; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Diagrama de Arquitectura</h1>
+    <p class="subtitle">Chatbot Webkor — Frontend → API → MySQL</p>
+
+    <div class="diagram">
+      <!-- Cliente -->
+      <div class="layer client">
+        <div class="layer-title">Cliente (Navegador)</div>
+        <div class="boxes">
+          <div class="box">
+            <strong>Frontend</strong>
+            <small>HTML + CSS + JS Vanilla</small>
+          </div>
+          <div class="box">
+            <strong>localStorage</strong>
+            <small>Conversaciones locales y user_id</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flecha 1 -->
+      <div class="arrow-container">
+        <div class="arrow">
+          <span class="arrow-label">POST /api/chat/</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+      </div>
+
+      <!-- Servidor -->
+      <div class="layer server">
+        <div class="layer-title">Servidor Web (Apache / Nginx)</div>
+        <div class="boxes">
+          <div class="box">
+            <strong>API Endpoint</strong>
+            <small>public_html/api/chat/index.php</small>
+          </div>
+          <div class="box">
+            <strong>Configuración</strong>
+            <small>public_html/api/config.php (PDO MySQL)</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flecha 2 -->
+      <div class="arrow-container">
+        <div class="arrow">
+          <span class="arrow-label">INSERT / SELECT (SQL)</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+      </div>
+
+      <!-- Base de datos -->
+      <div class="layer database">
+        <div class="layer-title">Base de Datos (MySQL 8.0)</div>
+        <div class="db-tables">
+          <div class="table-badge">users</div>
+          <div class="table-badge">conversations</div>
+          <div class="table-badge">messages</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="dot dot-client"></span> Cliente</div>
+      <div class="legend-item"><span class="dot dot-server"></span> Servidor</div>
+      <div class="legend-item"><span class="dot dot-db"></span> Base de datos</div>
+    </div>
+  </div>
+</body>
+</html>

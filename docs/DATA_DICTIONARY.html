@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diccionario de Datos - Chatbot Webkor</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0f1115;
+      color: #e5e7eb;
+      line-height: 1.6;
+      padding: 40px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 { color: #fff; border-bottom: 2px solid #10a37f; padding-bottom: 12px; margin-bottom: 8px; }
+    .meta { color: #9ca3af; margin-bottom: 32px; font-size: 14px; }
+    h2 { color: #10a37f; margin-top: 36px; font-size: 20px; }
+    h3 { color: #4dabf7; margin-top: 24px; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th, td { border: 1px solid #2a2b32; padding: 10px 12px; text-align: left; }
+    th { background: #1c1e24; color: #fff; }
+    td code { background: #1c1e24; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    pre {
+      background: #16181d;
+      border: 1px solid #2a2b32;
+      border-radius: 10px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .print-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10a37f;
+      color: #0f1115;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    @media print {
+      body { background: #fff; color: #111; }
+      h1 { color: #111; border-color: #10a37f; }
+      .meta { color: #374151; }
+      h2 { color: #0d8c6d; }
+      h3 { color: #1864ab; }
+      th { background: #f3f4f6; color: #111; }
+      td, th { border-color: #d1d5db; }
+      pre { background: #f3f4f6; border-color: #d1d5db; color: #111; }
+      td code { background: #f3f4f6; color: #111; }
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Guardar como PDF</button>
+
+  <h1>Diccionario de Datos — Chatbot Webkor</h1>
+  <p class="meta">Base de datos: <code>chatbot</code> &nbsp;|&nbsp; Motor: <code>InnoDB</code> &nbsp;|&nbsp; Charset: <code>utf8mb4</code> &nbsp;|&nbsp; Collation: <code>utf8mb4_unicode_ci</code></p>
+
+  <h2>1. Tabla: <code>users</code></h2>
+  <p>Almacena los usuarios únicos identificados por el sistema.</p>
+  <table>
+    <tr><th>Columna</th><th>Tipo</th><th>Nullable</th><th>Default</th><th>Descripción</th></tr>
+    <tr><td><code>user_id</code></td><td><code>VARCHAR(64)</code></td><td>NO</td><td>—</td><td>PK. Identificador único del usuario</td></tr>
+    <tr><td><code>created_at</code></td><td><code>TIMESTAMP</code></td><td>NO</td><td><code>CURRENT_TIMESTAMP</code></td><td>Fecha de creación del registro</td></tr>
+  </table>
+  <p><strong>Relaciones:</strong> <code>1:N</code> con <code>conversations</code> (<code>user_id</code>)</p>
+
+  <h2>2. Tabla: <code>conversations</code></h2>
+  <p>Agrupa los mensajes intercambiados en una misma conversación.</p>
+  <table>
+    <tr><th>Columna</th><th>Tipo</th><th>Nullable</th><th>Default</th><th>Descripción</th></tr>
+    <tr><td><code>conversation_id</code></td><td><code>VARCHAR(64)</code></td><td>NO</td><td>—</td><td>PK. Identificador único de la conversación</td></tr>
+    <tr><td><code>user_id</code></td><td><code>VARCHAR(64)</code></td><td>NO</td><td>—</td><td>FK a <code>users.user_id</code></td></tr>
+    <tr><td><code>title</code></td><td><code>VARCHAR(255)</code></td><td>YES</td><td><code>'Nueva conversación'</code></td><td>Título visible de la conversación</td></tr>
+    <tr><td><code>created_at</code></td><td><code>TIMESTAMP</code></td><td>NO</td><td><code>CURRENT_TIMESTAMP</code></td><td>Fecha de inicio</td></tr>
+    <tr><td><code>updated_at</code></td><td><code>TIMESTAMP</code></td><td>NO</td><td><code>CURRENT_TIMESTAMP ON UPDATE</code></td><td>Última modificación</td></tr>
+  </table>
+  <p><strong>Índices:</strong> <code>idx_user_id</code> (<code>user_id</code>), <code>idx_updated_at</code> (<code>updated_at</code>)</p>
+  <p><strong>Relaciones:</strong> <code>N:1</code> con <code>users</code> (<code>user_id</code>) · <code>1:N</code> con <code>messages</code> (<code>conversation_id</code>)</p>
+
+  <h2>3. Tabla: <code>messages</code></h2>
+  <p>Registra cada mensaje enviado tanto por el usuario como por el asistente.</p>
+  <table>
+    <tr><th>Columna</th><th>Tipo</th><th>Nullable</th><th>Default</th><th>Descripción</th></tr>
+    <tr><td><code>message_id</code></td><td><code>VARCHAR(64)</code></td><td>NO</td><td>—</td><td>PK. Identificador único del mensaje</td></tr>
+    <tr><td><code>conversation_id</code></td><td><code>VARCHAR(64)</code></td><td>NO</td><td>—</td><td>FK a <code>conversations.conversation_id</code></td></tr>
+    <tr><td><code>role</code></td><td><code>ENUM('user','assistant')</code></td><td>NO</td><td>—</td><td>Identifica al emisor del mensaje</td></tr>
+    <tr><td><code>content</code></td><td><code>TEXT</code></td><td>NO</td><td>—</td><td>Cuerpo del mensaje</td></tr>
+    <tr><td><code>type</code></td><td><code>ENUM('text','code','image','markdown')</code></td><td>YES</td><td><code>'text'</code></td><td>Formato del contenido</td></tr>
+    <tr><td><code>suggestions</code></td><td><code>JSON</code></td><td>YES</td><td><code>NULL</code></td><td>Array de sugerencias de follow-up</td></tr>
+    <tr><td><code>fallback</code></td><td><code>TINYINT(1)</code></td><td>YES</td><td><code>0</code></td><td><code>1</code> si la respuesta fue genérica</td></tr>
+    <tr><td><code>intent</code></td><td><code>VARCHAR(64)</code></td><td>YES</td><td><code>NULL</code></td><td>Intención detectada por el bot</td></tr>
+    <tr><td><code>confidence</code></td><td><code>DECIMAL(3,2)</code></td><td>YES</td><td><code>NULL</code></td><td>Confianza de la intención (<code>0.00</code> - <code>1.00</code>)</td></tr>
+    <tr><td><code>created_at</code></td><td><code>TIMESTAMP</code></td><td>NO</td><td><code>CURRENT_TIMESTAMP</code></td><td>Fecha de envío del mensaje</td></tr>
+  </table>
+  <p><strong>Índices:</strong> <code>idx_conversation_id</code> (<code>conversation_id</code>), <code>idx_created_at</code> (<code>created_at</code>)</p>
+  <p><strong>Relaciones:</strong> <code>N:1</code> con <code>conversations</code> (<code>conversation_id</code>)</p>
+
+  <h2>4. Diagrama Entidad-Relación (ER)</h2>
+  <pre><code>+-------------+       +-------------------+       +-------------+
+|   users     | 1   N |   conversations   | 1   N |   messages  |
++-------------+       +-------------------+       +-------------+
+| PK user_id  |&lt;-----&gt;| PK conversation_id|&lt;-----&gt;| PK message_id|
+| created_at  |       | FK user_id        |       | FK conv_id  |
++-------------+       | title             |       | role        |
+                      | created_at        |       | content     |
+                      | updated_at        |       | type        |
+                      +-------------------+       | suggestions |
+                                                  | fallback    |
+                                                  | intent      |
+                                                  | confidence  |
+                                                  | created_at  |
+                                                  +-------------+</code></pre>
+
+  <h2>5. Glosario de Términos</h2>
+  <table>
+    <tr><th>Término</th><th>Significado</th></tr>
+    <tr><td><code>user_id</code></td><td>Identificador anónimo generado por el frontend (localStorage / sesión PHP)</td></tr>
+    <tr><td><code>conversation_id</code></td><td>UUID que agrupa todos los mensajes de un mismo hilo de chat</td></tr>
+    <tr><td><code>message_id</code></td><td>UUID único por cada mensaje individual</td></tr>
+    <tr><td><code>role</code></td><td>Puede ser <code>user</code> (humano) o <code>assistant</code> (bot)</td></tr>
+    <tr><td><code>fallback</code></td><td>Bandera que indica si el bot no entendió la pregunta y respondió con un mensaje genérico</td></tr>
+    <tr><td><code>intent</code></td><td>Clasificación semántica de la intención del usuario (ej. <code>greeting</code>, <code>code_request</code>, <code>unknown</code>)</td></tr>
+    <tr><td><code>confidence</code></td><td>Probabilidad numérica de que la clasificación <code>intent</code> sea correcta</td></tr>
+    <tr><td><code>suggestions</code></td><td>Lista de posibles siguientes preguntas para facilitar la interacción</td></tr>
+  </table>
+</body>
+</html>
