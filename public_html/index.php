@@ -99,7 +99,7 @@ if (empty($_SESSION['chat_user_id'])) {
   </div>
 
   <script>
-    window.API_ENDPOINT = '/api/chat';
+    window.API_ENDPOINT = '/api/chat/';
     window.USER_ID = <?php echo json_encode($_SESSION['chat_user_id']); ?>;
   </script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
