@@ -1,0 +1,7 @@
+logs/
+document_errors/
+stats/
+cgi-bin/
+private/
+.env
+*.log

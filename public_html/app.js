@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const API_ENDPOINT = window.API_ENDPOINT || '/api/chat';
+  const API_ENDPOINT = window.API_ENDPOINT || '/api/chat/';
   const USER_ID = window.USER_ID || getOrCreateUserId();
 
   // DOM refs
